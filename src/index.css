@@ -80,3 +80,31 @@ body {
 .animate-slide-left { animation: slideInLeft 180ms ease forwards; }
 .animate-scale-in { animation: scaleIn 150ms ease forwards; }
 .animate-pulse-soft { animation: pulseSoft 2s ease infinite; }
+
+@media print {
+  html, body, #root {
+    overflow: visible !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  aside,
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  main,
+  div,
+  section,
+  article,
+  table,
+  tr,
+  th,
+  td {
+    background: #fff !important;
+    color: #000 !important;
+    border-color: #000 !important;
+    box-shadow: none !important;
+  }
+}

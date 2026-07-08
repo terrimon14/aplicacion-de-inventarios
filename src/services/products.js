@@ -8,6 +8,7 @@ export const productService = {
   delete: (id) => invoke('db:products:delete', id),
   updateStock: (id, delta) => invoke('db:products:updateStock', { id, delta }),
   lowStock: (filters = {}) => invoke('db:products:lowStock', filters),
+  exportInventoryPdf: (payload) => invoke('app:inventory:exportPdf', payload),
 }
 
 export const categoryService = {

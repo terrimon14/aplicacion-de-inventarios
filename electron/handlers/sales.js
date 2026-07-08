@@ -55,12 +55,24 @@ module.exports = function registerSaleHandlers() {
 
     const saleStatus = payment_method === 'credit' ? 'pending' : 'completed'
 
+    let resolvedCashSessionId = cash_session_id || null
+    if (!resolvedCashSessionId) {
+      const openSession = queryOne(
+        `SELECT id FROM cash_sessions WHERE status = 'open' ORDER BY opening_date DESC, id DESC LIMIT 1`,
+      )
+      resolvedCashSessionId = openSession?.id || null
+    }
+
+    if (!resolvedCashSessionId) {
+      throw new Error('Debe abrir una caja para registrar ventas.')
+    }
+
     run(`
       INSERT INTO sales (reference, customer_id, customer_name, subtotal, tax, discount, total, payment_method, cash_session_id, notes)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [reference, customer_id || null, customer_name || 'Cliente general',
         subtotal, tax, discount, total, dbPaymentMethod,
-        cash_session_id || null, notes])
+        resolvedCashSessionId, notes])
 
     const saleId = lastInsertRowId()
 
@@ -104,9 +116,9 @@ module.exports = function registerSaleHandlers() {
     }
 
     // Register cash movement if session open
-    if (cash_session_id) {
+    if (dbPaymentMethod === 'cash' && resolvedCashSessionId) {
       run(`INSERT INTO cash_movements (session_id, type, amount, description) VALUES (?, 'in', ?, ?)`,
-        [cash_session_id, total, `Venta ${reference}`])
+        [resolvedCashSessionId, total, `Venta ${reference}`])
     }
 
     return { id: saleId, reference, total }

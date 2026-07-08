@@ -32,6 +32,8 @@ const OPTIONS = [
 export default function PrintInventoryModal({ isOpen, onClose }) {
   const [option, setOption] = useState('store')
   const [loading, setLoading] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [feedback, setFeedback] = useState('')
   const [previewData, setPreviewData] = useState([])
 
   const selected = OPTIONS.find(o => o.id === option) ?? OPTIONS[0]
@@ -45,6 +47,7 @@ export default function PrintInventoryModal({ isOpen, onClose }) {
 
   const loadPreview = async () => {
     setLoading(true)
+    setFeedback('')
     try {
       const rows = await productService.list({ ubicacionId: selected.ubicacionId })
       setPreviewData(Array.isArray(rows) ? rows : [])
@@ -53,8 +56,34 @@ export default function PrintInventoryModal({ isOpen, onClose }) {
     }
   }
 
+  const exportPdf = async () => {
+    if (previewData.length === 0) return
+
+    setExporting(true)
+    setFeedback('')
+    try {
+      const result = await productService.exportInventoryPdf({
+        title: 'Inventario - Reporte Imprimible',
+        optionLabel: selected.label,
+        summary,
+        rows: previewData,
+      })
+
+      if (result?.canceled) {
+        setFeedback('Exportacion cancelada por el usuario.')
+      } else {
+        setFeedback(`PDF generado correctamente en: ${result?.filePath}`)
+      }
+    } catch (error) {
+      setFeedback(error.message || 'No se pudo exportar el inventario a PDF.')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   const handleClose = () => {
     setPreviewData([])
+    setFeedback('')
     onClose()
   }
 
@@ -68,11 +97,17 @@ export default function PrintInventoryModal({ isOpen, onClose }) {
         <>
           <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
           <Button variant="outline" loading={loading} onClick={loadPreview}>Generar Vista Previa</Button>
-          <Button icon={Printer} disabled={previewData.length === 0}>Exportar PDF (Proximo)</Button>
+          <Button icon={Printer} loading={exporting} disabled={previewData.length === 0} onClick={exportPdf}>Exportar PDF</Button>
         </>
       )}
     >
       <div className="space-y-4">
+        {feedback && (
+          <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-3 text-sm text-indigo-200">
+            {feedback}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {OPTIONS.map((item) => (
             <label

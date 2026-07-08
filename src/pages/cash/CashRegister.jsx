@@ -1,23 +1,32 @@
-import { Wallet, ArrowUp, ArrowDown, TrendingUp } from 'lucide-react'
+import { Wallet, ArrowUp, ArrowDown } from 'lucide-react'
 import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Table, { THead, Th, TBody, Tr, Td } from '../../components/ui/Table'
 import Breadcrumb from '../../components/ui/Breadcrumb'
+import { useAsync } from '../../hooks/useAsync'
+import { cashService } from '../../services/cash'
 import { formatCurrency } from '../../utils/formatters'
 import { clsx } from 'clsx'
-
-const movements = [
-  { id: 1, type: 'in', description: 'Venta #0892 — Carlos Mendoza', amount: 1250.0, time: '09:45' },
-  { id: 2, type: 'in', description: 'Venta #0891 — Ana García', amount: 450.0, time: '09:12' },
-  { id: 3, type: 'out', description: 'Compra de insumos', amount: 320.0, time: '08:30' },
-  { id: 4, type: 'in', description: 'Venta #0890 — Juan Pérez', amount: 2100.0, time: 'Ayer' },
-]
+import { useNavigate } from 'react-router-dom'
 
 export default function CashRegister() {
-  const balance = 8450.0
-  const income = movements.filter(m => m.type === 'in').reduce((a, m) => a + m.amount, 0)
-  const expenses = movements.filter(m => m.type === 'out').reduce((a, m) => a + m.amount, 0)
+  const navigate = useNavigate()
+
+  const { data: sessionData, loading } = useAsync(
+    async () => {
+      const result = await cashService.currentSession(1)
+      return result || null
+    },
+    [],
+    null,
+  )
+
+  const session = sessionData || null
+  const movements = Array.isArray(session?.movements) ? session.movements.slice(0, 20) : []
+  const income = Number(session?.income || 0)
+  const expenses = Number(session?.expenses || 0)
+  const balance = Number(session?.expected_balance || 0)
 
   return (
     <div className="flex flex-col gap-5 animate-fade-in">
@@ -26,6 +35,20 @@ export default function CashRegister() {
         <h1 className="text-xl font-bold text-[#e2e4f0] mt-2">Caja</h1>
         <p className="text-sm text-[#5c5e78]">Control de caja del día</p>
       </div>
+
+      {!loading && !session ? (
+        <Card className="border-rose-500/20 bg-rose-500/5">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-rose-300">Caja cerrada</p>
+              <p className="text-sm text-[#9496b0] mt-1">
+                Debes abrir una sesion de caja para habilitar ventas y cobranzas en efectivo.
+              </p>
+            </div>
+            <Button onClick={() => navigate('/cash/sessions')}>Ir a Apertura de Caja</Button>
+          </div>
+        </Card>
+      ) : null}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card className="border-indigo-500/20 md:col-span-1">
@@ -39,11 +62,15 @@ export default function CashRegister() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Badge color="emerald" dot>Caja abierta</Badge>
+            <Badge color={session ? 'emerald' : 'rose'} dot>{session ? 'Caja abierta' : 'Caja cerrada'}</Badge>
           </div>
           <div className="mt-4 flex gap-2">
-            <Button variant="danger" size="sm" className="flex-1">Cerrar Caja</Button>
-            <Button variant="secondary" size="sm" className="flex-1">Imprimir</Button>
+            <Button variant="danger" size="sm" className="flex-1" onClick={() => navigate('/cash/sessions')}>
+              Cerrar Caja
+            </Button>
+            <Button variant="secondary" size="sm" className="flex-1" onClick={() => navigate('/cash/movements')}>
+              Gastos
+            </Button>
           </div>
         </Card>
 
@@ -78,7 +105,9 @@ export default function CashRegister() {
             <CardTitle>Movimientos del día</CardTitle>
             <CardSubtitle>Historial de transacciones</CardSubtitle>
           </div>
-          <Button variant="secondary" size="sm" icon={ArrowDown}>Registrar egreso</Button>
+          <Button variant="secondary" size="sm" icon={ArrowDown} onClick={() => navigate('/cash/movements')}>
+            Registrar egreso
+          </Button>
         </CardHeader>
         <Table>
           <THead>
@@ -88,7 +117,11 @@ export default function CashRegister() {
             <Th align="right">Monto</Th>
           </THead>
           <TBody>
-            {movements.map(m => (
+            {movements.length === 0 ? (
+              <Tr>
+                <Td colSpan={4} className="text-center text-[#5c5e78]">No hay movimientos hoy.</Td>
+              </Tr>
+            ) : movements.map(m => (
               <Tr key={m.id}>
                 <Td>
                   <div className={clsx(
@@ -102,7 +135,7 @@ export default function CashRegister() {
                   </div>
                 </Td>
                 <Td><span className="text-[#e2e4f0]">{m.description}</span></Td>
-                <Td align="center" muted>{m.time}</Td>
+                <Td align="center" muted>{new Date(m.created_at).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}</Td>
                 <Td align="right">
                   <span className={clsx(
                     'font-bold',

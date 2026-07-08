@@ -7,10 +7,13 @@ import Products from '../pages/inventory/Products'
 import Categories from '../pages/inventory/Categories'
 import Stock from '../pages/inventory/Stock'
 import LowStock from '../pages/inventory/LowStock'
+import Transfers from '../pages/inventory/Transfers'
 import NewSale from '../pages/sales/NewSale'
 import SalesHistory from '../pages/sales/SalesHistory'
 import Quotes from '../pages/sales/Quotes'
 import CashRegister from '../pages/cash/CashRegister'
+import CashOpenClose from '../pages/cash/CashOpenClose'
+import CashMovements from '../pages/cash/CashMovements'
 import Customers from '../pages/customers/Customers'
 import Debtors from '../pages/customers/Debtors'
 import Suppliers from '../pages/suppliers/Suppliers'
@@ -19,6 +22,7 @@ import Users from '../pages/users/Users'
 import Settings from '../pages/settings/Settings'
 import Help from '../pages/help/Help'
 import PurchaseOrders from '../pages/purchases/PurchaseOrders'
+import PurchaseOrderDetail from '../pages/purchases/PurchaseOrderDetail'
 
 // Placeholder for pages not yet built
 function Placeholder({ title }) {
@@ -46,6 +50,7 @@ export default function AppRouter() {
         <Route path="/inventory/categories" element={<Categories />} />
         <Route path="/inventory/brands" element={<Placeholder title="Marcas" />} />
         <Route path="/inventory/stock" element={<Stock />} />
+        <Route path="/inventory/transfers" element={<Transfers />} />
         <Route path="/inventory/low-stock" element={<LowStock />} />
         <Route path="/inventory/import" element={<Placeholder title="Importar productos" />} />
         <Route path="/inventory/export" element={<Placeholder title="Exportar productos" />} />
@@ -62,11 +67,12 @@ export default function AppRouter() {
         <Route path="/purchases/new" element={<Placeholder title="Nueva Compra" />} />
         <Route path="/purchases/history" element={<Placeholder title="Historial de Compras" />} />
         <Route path="/purchases/orders" element={<PurchaseOrders />} />
+        <Route path="/purchases/orders/:id" element={<PurchaseOrderDetail />} />
 
         {/* Cash */}
         <Route path="/cash" element={<CashRegister />} />
-        <Route path="/cash/sessions" element={<Placeholder title="Sesiones de Caja" />} />
-        <Route path="/cash/movements" element={<Placeholder title="Movimientos de Caja" />} />
+        <Route path="/cash/sessions" element={<CashOpenClose />} />
+        <Route path="/cash/movements" element={<CashMovements />} />
 
         {/* Customers */}
         <Route path="/customers" element={<Customers />} />
@@ -80,10 +86,10 @@ export default function AppRouter() {
         {/* Reports */}
         <Route path="/reports" element={<Reports />} />
         <Route path="/reports/sales" element={<Reports />} />
-        <Route path="/reports/purchases" element={<Placeholder title="Reporte de Compras" />} />
-        <Route path="/reports/profits" element={<Placeholder title="Reporte de Ganancias" />} />
-        <Route path="/reports/top-products" element={<Placeholder title="Productos más vendidos" />} />
-        <Route path="/reports/inventory" element={<Placeholder title="Reporte de Inventario" />} />
+        <Route path="/reports/purchases" element={<Reports />} />
+        <Route path="/reports/profits" element={<Reports />} />
+        <Route path="/reports/top-products" element={<Reports />} />
+        <Route path="/reports/inventory" element={<Reports />} />
 
         {/* Users */}
         <Route path="/users" element={<Users />} />

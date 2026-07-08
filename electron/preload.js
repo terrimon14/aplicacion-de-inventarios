@@ -29,6 +29,8 @@ const VALID_CHANNELS = [
   // Customers
   'db:customers:list', 'db:customers:get', 'db:customers:create',
   'db:customers:update', 'db:customers:delete', 'db:customers:debtors',
+  'db:customers:installments', 'db:customers:registerPayment',
+  'db:customers:paymentHistory',
 
   // Suppliers
   'db:suppliers:list', 'db:suppliers:get', 'db:suppliers:create',
@@ -37,15 +39,24 @@ const VALID_CHANNELS = [
   // Cash
   'db:cash:currentSession', 'db:cash:openSession', 'db:cash:closeSession',
   'db:cash:movements', 'db:cash:addMovement',
+  'db:cash:summary', 'db:cash:activeRequired',
 
   // Users
   'db:users:list', 'db:users:create', 'db:users:update', 'db:users:delete',
 
   // Reports
-  'db:reports:sales', 'db:reports:topProducts', 'db:reports:inventory',
+  'db:reports:sales', 'db:reports:purchases', 'db:reports:profits',
+  'db:reports:topProducts', 'db:reports:inventory', 'db:reports:summary',
 
   // Purchase orders
   'db:purchaseOrders:list', 'db:purchaseOrders:suggest', 'db:purchaseOrders:create',
+  'db:purchaseOrders:get', 'db:purchaseOrders:receive',
+
+  // Internal transfers
+  'db:transfers:list', 'db:transfers:create',
+
+  // Printing
+  'app:inventory:exportPdf',
 ]
 
 contextBridge.exposeInMainWorld('electron', {

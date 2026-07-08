@@ -32,6 +32,7 @@ export const secondaryMenus = {
     { label: 'Categorías', path: '/inventory/categories' },
     { label: 'Marcas', path: '/inventory/brands' },
     { label: 'Stock', path: '/inventory/stock' },
+    { label: 'Traspasos', path: '/inventory/transfers' },
     { label: 'Stock Bajo', path: '/inventory/low-stock', badge: 'alerta' },
     { label: 'Importar', path: '/inventory/import' },
     { label: 'Imprimir Inventario', path: '/inventory/print' },

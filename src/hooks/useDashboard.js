@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useAsync, useMutation } from './useAsync'
 import { dashboardService } from '../services/dashboard'
 import { mockStats, mockRecentActivity, mockSalesChart } from '../data/mockData'
@@ -28,6 +28,15 @@ export function useDashboard() {
     refetchStats()
     refetchActivity()
   }, [refetchStats, refetchActivity])
+
+  useEffect(() => {
+    const onDataChanged = () => {
+      refetch()
+    }
+
+    window.addEventListener('app:data:changed', onDataChanged)
+    return () => window.removeEventListener('app:data:changed', onDataChanged)
+  }, [refetch])
 
   return {
     stats,

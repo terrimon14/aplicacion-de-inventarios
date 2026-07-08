@@ -3,6 +3,9 @@ import { invoke } from './api'
 export const customerService = {
   list: (filters = {}) => invoke('db:customers:list', filters),
   debtors: () => invoke('db:customers:debtors'),
+  installments: (customerId) => invoke('db:customers:installments', { customerId }),
+  paymentHistory: (customerId) => invoke('db:customers:paymentHistory', { customerId }),
+  registerPayment: (data) => invoke('db:customers:registerPayment', data),
   get: (id) => invoke('db:customers:get', id),
   create: (data) => invoke('db:customers:create', data),
   update: (data) => invoke('db:customers:update', data),

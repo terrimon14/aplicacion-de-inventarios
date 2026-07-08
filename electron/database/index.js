@@ -77,8 +77,8 @@ function seedIfEmpty() {
 }
 
 // Helper: run a query that returns rows as objects
-function queryAll(sql, params = []) {
-  const stmt = db.prepare(sql)
+function queryAllOn(dbRef, sql, params = []) {
+  const stmt = dbRef.prepare(sql)
   stmt.bind(params)
   const rows = []
   while (stmt.step()) {
@@ -88,9 +88,18 @@ function queryAll(sql, params = []) {
   return rows
 }
 
+function queryAll(sql, params = []) {
+  return queryAllOn(db, sql, params)
+}
+
 // Helper: run a query that returns one row
 function queryOne(sql, params = []) {
   const rows = queryAll(sql, params)
+  return rows[0] ?? null
+}
+
+function queryOneOn(dbRef, sql, params = []) {
+  const rows = queryAllOn(dbRef, sql, params)
   return rows[0] ?? null
 }
 
@@ -107,4 +116,33 @@ function lastInsertRowId() {
   return result[0]?.values[0][0] ?? null
 }
 
-module.exports = { getDatabase, saveDatabase, queryAll, queryOne, run, lastInsertRowId }
+function withTransaction(callback) {
+  try {
+    db.run('BEGIN TRANSACTION')
+
+    const tx = {
+      run: (sql, params = []) => db.run(sql, params),
+      queryAll: (sql, params = []) => queryAllOn(db, sql, params),
+      queryOne: (sql, params = []) => queryOneOn(db, sql, params),
+      lastInsertRowId: () => {
+        const result = db.exec('SELECT last_insert_rowid() as id')
+        return result[0]?.values[0][0] ?? null
+      },
+    }
+
+    const result = callback(tx)
+    db.run('COMMIT')
+    saveDatabase()
+    return result
+  } catch (error) {
+    try {
+      db.run('ROLLBACK')
+      saveDatabase()
+    } catch (_) {
+      // Ignore rollback failures.
+    }
+    throw error
+  }
+}
+
+module.exports = { getDatabase, saveDatabase, queryAll, queryOne, run, lastInsertRowId, withTransaction }

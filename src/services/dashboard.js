@@ -7,8 +7,11 @@ export const dashboardService = {
 
 export const reportService = {
   sales: (filters = {}) => invoke('db:reports:sales', filters),
-  topProducts: () => invoke('db:reports:topProducts'),
-  inventory: () => invoke('db:reports:inventory'),
+  purchases: (filters = {}) => invoke('db:reports:purchases', filters),
+  profits: (filters = {}) => invoke('db:reports:profits', filters),
+  summary: (filters = {}) => invoke('db:reports:summary', filters),
+  topProducts: (filters = {}) => invoke('db:reports:topProducts', filters),
+  inventory: (filters = {}) => invoke('db:reports:inventory', filters),
 }
 
 export const cashService = {

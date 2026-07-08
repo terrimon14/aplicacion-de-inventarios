@@ -52,6 +52,17 @@ module.exports = [
     UNIQUE(producto_id, ubicacion_id)
   )`,
 
+  // Internal stock transfer audit trail
+  `CREATE TABLE IF NOT EXISTS inventory_transfers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    from_location_id INTEGER NOT NULL REFERENCES ubicaciones(id),
+    to_location_id INTEGER NOT NULL REFERENCES ubicaciones(id),
+    quantity INTEGER NOT NULL,
+    note TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )`,
+
   // Customers
   `CREATE TABLE IF NOT EXISTS customers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,12 +104,16 @@ module.exports = [
   // Cash sessions
   `CREATE TABLE IF NOT EXISTS cash_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES users(id),
+    opening_date TEXT DEFAULT (datetime('now')),
+    closing_date TEXT,
     opening_balance REAL NOT NULL DEFAULT 0,
-    closing_balance REAL,
+    expected_balance REAL,
+    real_balance REAL,
     status TEXT DEFAULT 'open' CHECK(status IN ('open','closed')),
     opened_at TEXT DEFAULT (datetime('now')),
     closed_at TEXT,
-    user_id INTEGER REFERENCES users(id)
+    closing_balance REAL
   )`,
 
   // Cash movements
@@ -138,6 +153,16 @@ module.exports = [
     paid_amount REAL NOT NULL DEFAULT 0,
     status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','partial','paid','overdue')),
     paid_at TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  )`,
+
+  // Payment history for installments (partial or total)
+  `CREATE TABLE IF NOT EXISTS installment_payments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    installment_id INTEGER NOT NULL REFERENCES sale_installments(id) ON DELETE CASCADE,
+    customer_id INTEGER REFERENCES customers(id),
+    amount REAL NOT NULL,
+    payment_date TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now'))
   )`,
 
@@ -209,4 +234,18 @@ module.exports = [
   `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)
    SELECT p.id, 2, (p.stock - CAST(p.stock * 0.7 AS INTEGER))
    FROM products p`,
+
+  // Cash session migrations for existing databases
+  `ALTER TABLE cash_sessions ADD COLUMN opening_date TEXT DEFAULT (datetime('now'))`,
+  `ALTER TABLE cash_sessions ADD COLUMN closing_date TEXT`,
+  `ALTER TABLE cash_sessions ADD COLUMN expected_balance REAL`,
+  `ALTER TABLE cash_sessions ADD COLUMN real_balance REAL`,
+
+  // Keep new date fields aligned with legacy opened/closed fields when available
+  `UPDATE cash_sessions
+   SET opening_date = COALESCE(opening_date, opened_at, datetime('now'))
+   WHERE opening_date IS NULL`,
+  `UPDATE cash_sessions
+   SET closing_date = COALESCE(closing_date, closed_at)
+   WHERE closing_date IS NULL AND status = 'closed'`,
 ]

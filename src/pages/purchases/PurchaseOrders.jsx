@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Sparkles, Save, ShoppingBag } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Breadcrumb from '../../components/ui/Breadcrumb'
@@ -11,6 +12,7 @@ import { useUbicacion } from '../../contexts/UbicacionContext'
 import { useAsync } from '../../hooks/useAsync'
 
 export default function PurchaseOrders() {
+  const navigate = useNavigate()
   const { ubicacionActiva, ubicacionId } = useUbicacion()
   const [draftItems, setDraftItems] = useState([])
   const [loadingSuggest, setLoadingSuggest] = useState(false)
@@ -176,16 +178,20 @@ export default function PurchaseOrders() {
             <Th align="center">Items</Th>
             <Th align="center">Unidades</Th>
             <Th align="center">Estado</Th>
+            <Th align="center">Accion</Th>
           </THead>
           <TBody>
             {orders.length === 0 ? (
               <Tr>
-                <Td className="text-center text-[#5c5e78]" colSpan={5}>
+                <Td className="text-center text-[#5c5e78]" colSpan={6}>
                   No hay ordenes registradas.
                 </Td>
               </Tr>
             ) : orders.map((order) => (
-              <Tr key={order.id}>
+              <Tr
+                key={order.id}
+                onClick={order.status === 'pending_receipt' ? () => navigate(`/purchases/orders/${order.id}`) : undefined}
+              >
                 <Td>
                   <div className="flex items-center gap-2">
                     <ShoppingBag size={14} className="text-indigo-300" />
@@ -196,7 +202,14 @@ export default function PurchaseOrders() {
                 <Td align="center" muted>{order.items_count}</Td>
                 <Td align="center" muted>{order.qty_total}</Td>
                 <Td align="center">
-                  <Badge color="amber">Pendiente de Recibir</Badge>
+                  <Badge color={order.status === 'received' ? 'emerald' : order.status === 'cancelled' ? 'rose' : 'amber'}>
+                    {order.status === 'received' ? 'Recibida' : order.status === 'cancelled' ? 'Cancelada' : 'Pendiente de Recibir'}
+                  </Badge>
+                </Td>
+                <Td align="center">
+                  <Button variant="secondary" size="xs" onClick={() => navigate(`/purchases/orders/${order.id}`)}>
+                    {order.status === 'pending_receipt' ? 'Abrir detalle' : 'Ver detalle'}
+                  </Button>
                 </Td>
               </Tr>
             ))}

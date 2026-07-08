@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron')
-const { queryAll, queryOne, run, lastInsertRowId } = require('../database/index')
+const { queryAll, queryOne, run, lastInsertRowId, withTransaction } = require('../database/index')
 
 function generateRef(prefix = 'OC') {
   const rows = queryAll(`SELECT COUNT(*) as cnt FROM purchase_orders`)
@@ -18,6 +18,27 @@ module.exports = function registerPurchaseOrderHandlers() {
       GROUP BY po.id
       ORDER BY po.created_at DESC
     `)
+  })
+
+  ipcMain.handle('db:purchaseOrders:get', (_, id) => {
+    const order = queryOne(`SELECT * FROM purchase_orders WHERE id = ?`, [id])
+    if (!order) return null
+
+    const items = queryAll(`
+      SELECT *
+      FROM purchase_order_items
+      WHERE order_id = ?
+      ORDER BY id ASC
+    `, [id])
+
+    const suppliers = Array.from(new Set(items.map((item) => item.supplier_suggested).filter(Boolean)))
+    const supplierName = suppliers.length === 0
+      ? 'Proveedor por definir'
+      : suppliers.length === 1
+        ? suppliers[0]
+        : 'Varios proveedores'
+
+    return { ...order, supplier_name: supplierName, items }
   })
 
   ipcMain.handle('db:purchaseOrders:suggest', (_, { ubicacionId = null } = {}) => {
@@ -102,5 +123,56 @@ module.exports = function registerPurchaseOrderHandlers() {
     })
 
     return queryOne(`SELECT * FROM purchase_orders WHERE id = ?`, [orderId])
+  })
+
+  ipcMain.handle('db:purchaseOrders:receive', (_, id) => {
+    const order = queryOne(`SELECT * FROM purchase_orders WHERE id = ?`, [id])
+    if (!order) throw new Error('Orden no encontrada')
+    if (order.status !== 'pending_receipt') throw new Error('La orden ya fue procesada o cancelada')
+
+    const items = queryAll(`SELECT * FROM purchase_order_items WHERE order_id = ?`, [id])
+    if (items.length === 0) throw new Error('La orden no tiene items')
+
+    try {
+      withTransaction((tx) => {
+        items.forEach((item) => {
+          tx.run(
+            `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)
+             VALUES (?, 1, 0)`,
+            [item.product_id],
+          )
+
+          tx.run(
+            `UPDATE inventario_ubicacion
+             SET cantidad = cantidad + ?, updated_at = datetime('now')
+             WHERE producto_id = ? AND ubicacion_id = 1`,
+            [Number(item.qty_requested || 0), item.product_id],
+          )
+
+          const row = tx.queryOne(
+            `SELECT COALESCE(SUM(cantidad), 0) as stock_total
+             FROM inventario_ubicacion
+             WHERE producto_id = ?`,
+            [item.product_id],
+          )
+
+          tx.run(
+            `UPDATE products SET stock = ?, updated_at = datetime('now') WHERE id = ?`,
+            [Number(row?.stock_total ?? 0), item.product_id],
+          )
+        })
+
+        tx.run(
+          `UPDATE purchase_orders
+           SET status = 'received'
+           WHERE id = ?`,
+          [id],
+        )
+      })
+
+      return queryOne(`SELECT * FROM purchase_orders WHERE id = ?`, [id])
+    } catch (error) {
+      throw new Error(`No se pudo recibir la orden: ${error.message}`)
+    }
   })
 }

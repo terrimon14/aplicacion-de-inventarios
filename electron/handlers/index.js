@@ -11,6 +11,8 @@ const registerCashHandlers = require('./cash')
 const registerUserHandlers = require('./users')
 const registerDashboardHandlers = require('./dashboard')
 const registerPurchaseOrderHandlers = require('./purchaseOrders')
+const registerPrintingHandlers = require('./printing')
+const registerTransferHandlers = require('./transfers')
 
 async function registerAllHandlers() {
   // Initialize DB first
@@ -27,6 +29,8 @@ async function registerAllHandlers() {
   registerUserHandlers()
   registerDashboardHandlers()
   registerPurchaseOrderHandlers()
+  registerPrintingHandlers()
+  registerTransferHandlers()
 }
 
 module.exports = { registerAllHandlers }

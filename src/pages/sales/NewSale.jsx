@@ -9,11 +9,14 @@ import { useAsync } from '../../hooks/useAsync'
 import { productService } from '../../services/products'
 import { customerService } from '../../services/customers'
 import { saleService } from '../../services/sales'
+import { cashService } from '../../services/cash'
 import { useUbicacion } from '../../contexts/UbicacionContext'
 import { formatCurrency } from '../../utils/formatters'
 import { clsx } from 'clsx'
+import { useNavigate } from 'react-router-dom'
 
 export default function NewSale() {
+  const navigate = useNavigate()
   const { ubicacionActiva, ubicacionId } = useUbicacion()
   const [cart, setCart] = useState([])
   const [search, setSearch] = useState('')
@@ -43,6 +46,17 @@ export default function NewSale() {
     [],
     [],
   )
+
+  const { data: cashStatus, loading: cashLoading } = useAsync(
+    async () => {
+      const result = await cashService.activeRequired(1)
+      return result || { hasOpenSession: false }
+    },
+    [],
+    { hasOpenSession: false },
+  )
+
+  const hasOpenCashSession = !!cashStatus?.hasOpenSession
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0)
   const tax = subtotal * 0.18
@@ -116,6 +130,20 @@ export default function NewSale() {
           <p className="text-sm text-indigo-200">{message}</p>
         </Card>
       )}
+
+      {!cashLoading && !hasOpenCashSession ? (
+        <Card className="border-rose-500/20 bg-rose-500/5 max-w-3xl">
+          <p className="text-sm font-semibold text-rose-300">Caja no abierta</p>
+          <p className="text-sm text-[#9496b0] mt-2">
+            El POS esta bloqueado hasta registrar la apertura del turno de caja.
+          </p>
+          <div className="mt-4">
+            <Button onClick={() => navigate('/cash/sessions')}>Ir a Apertura de Caja</Button>
+          </div>
+        </Card>
+      ) : null}
+
+      {!cashLoading && !hasOpenCashSession ? null : (
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 flex-1">
         {/* Left — Product Search */}
@@ -323,6 +351,8 @@ export default function NewSale() {
           </Card>
         </div>
       </div>
+
+      )}
     </div>
   )
 }
