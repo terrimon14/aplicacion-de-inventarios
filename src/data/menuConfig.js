@@ -8,9 +8,6 @@ import {
   Truck,
   BarChart2,
   UserCog,
-  Settings,
-  HelpCircle,
-  UserCircle,
 } from 'lucide-react'
 
 export const mainNavItems = [
@@ -22,13 +19,10 @@ export const mainNavItems = [
   { id: 'customers', label: 'Clientes', icon: Users, path: '/customers' },
   { id: 'suppliers', label: 'Proveedores', icon: Truck, path: '/suppliers' },
   { id: 'reports', label: 'Reportes', icon: BarChart2, path: '/reports' },
-  { id: 'users', label: 'Usuarios', icon: UserCog, path: '/users' },
 ]
 
 export const bottomNavItems = [
-  { id: 'settings', label: 'Configuración', icon: Settings, path: '/settings' },
-  { id: 'help', label: 'Ayuda', icon: HelpCircle, path: '/help' },
-  { id: 'profile', label: 'Perfil', icon: UserCircle, path: '/profile' },
+  { id: 'users', label: 'Usuario', icon: UserCog, path: '/users' },
 ]
 
 export const secondaryMenus = {
@@ -40,29 +34,27 @@ export const secondaryMenus = {
     { label: 'Stock', path: '/inventory/stock' },
     { label: 'Stock Bajo', path: '/inventory/low-stock', badge: 'alerta' },
     { label: 'Importar', path: '/inventory/import' },
-    { label: 'Exportar', path: '/inventory/export' },
-    { label: 'Códigos de Barras', path: '/inventory/barcodes' },
+    { label: 'Imprimir Inventario', path: '/inventory/print' },
   ],
   sales: [
     { label: 'Nueva Venta', path: '/sales/new' },
     { label: 'Historial', path: '/sales/history' },
     { label: 'Cotizaciones', path: '/sales/quotes' },
-    { label: 'Facturas', path: '/sales/invoices' },
   ],
   purchases: [
     { label: 'Nueva Compra', path: '/purchases/new' },
     { label: 'Historial', path: '/purchases/history' },
-    { label: 'Órdenes de Compra', path: '/purchases/orders' },
+    { label: 'Órdenes de Compra (Pedidos)', path: '/purchases/orders' },
   ],
   cash: [
     { label: 'Caja Actual', path: '/cash' },
-    { label: 'Apertura / Cierre', path: '/cash/sessions' },
-    { label: 'Movimientos', path: '/cash/movements' },
+    { label: 'Apertura y Cierre', path: '/cash/sessions' },
+    { label: 'Movimientos / Gastos', path: '/cash/movements' },
   ],
   customers: [
     { label: 'Lista de Clientes', path: '/customers' },
     { label: 'Nuevo Cliente', path: '/customers/new' },
-    { label: 'Grupos', path: '/customers/groups' },
+    { label: 'Lista de Deudores', path: '/customers/debtors' },
   ],
   suppliers: [
     { label: 'Lista de Proveedores', path: '/suppliers' },
@@ -73,26 +65,11 @@ export const secondaryMenus = {
     { label: 'Compras', path: '/reports/purchases' },
     { label: 'Ganancias', path: '/reports/profits' },
     { label: 'Más Vendidos', path: '/reports/top-products' },
-    { label: 'Inventario', path: '/reports/inventory' },
+    { label: 'Inventario Valorado', path: '/reports/inventory' },
   ],
   users: [
     { label: 'Usuarios', path: '/users' },
     { label: 'Roles', path: '/users/roles' },
     { label: 'Permisos', path: '/users/permissions' },
-  ],
-  settings: [
-    { label: 'General', path: '/settings' },
-    { label: 'Empresa', path: '/settings/company' },
-    { label: 'Impresoras', path: '/settings/printers' },
-    { label: 'Apariencia', path: '/settings/appearance' },
-  ],
-  help: [
-    { label: 'Documentación', path: '/help' },
-    { label: 'Atajos de Teclado', path: '/help/shortcuts' },
-    { label: 'Acerca de', path: '/help/about' },
-  ],
-  profile: [
-    { label: 'Mi Perfil', path: '/profile' },
-    { label: 'Seguridad', path: '/profile/security' },
   ],
 }

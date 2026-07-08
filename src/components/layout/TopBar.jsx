@@ -1,15 +1,16 @@
-import { Bell, Search, Maximize2, Minimize2, ChevronDown } from 'lucide-react'
+import { Bell, Search, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
 import { useApp } from '../../contexts/AppContext'
+import { UBICACIONES, useUbicacion } from '../../contexts/UbicacionContext'
 import { mainNavItems, bottomNavItems } from '../../data/menuConfig'
 
 const allNavItems = [...mainNavItems, ...bottomNavItems]
 
 export default function TopBar() {
   const { activeModule, unreadCount, notifications, markNotificationRead } = useApp()
+  const { ubicacionActiva, setTienda, setAlmacen } = useUbicacion()
   const [showNotifs, setShowNotifs] = useState(false)
-  const [isMaximized, setIsMaximized] = useState(false)
   const activeNavItem = allNavItems.find(i => i.id === activeModule)
 
   const notifColors = {
@@ -33,6 +34,31 @@ export default function TopBar() {
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center h-8 p-0.5 bg-[#1e1e27] border border-[#2a2a38] rounded-xl">
+          <button
+            onClick={setTienda}
+            className={clsx(
+              'px-2.5 h-7 rounded-lg text-xs font-medium transition-all',
+              ubicacionActiva.id === UBICACIONES.TIENDA.id
+                ? 'bg-indigo-500/20 text-indigo-300'
+                : 'text-[#9496b0] hover:text-[#e2e4f0]'
+            )}
+          >
+            🏪 Tienda
+          </button>
+          <button
+            onClick={setAlmacen}
+            className={clsx(
+              'px-2.5 h-7 rounded-lg text-xs font-medium transition-all',
+              ubicacionActiva.id === UBICACIONES.ALMACEN_CENTRAL.id
+                ? 'bg-indigo-500/20 text-indigo-300'
+                : 'text-[#9496b0] hover:text-[#e2e4f0]'
+            )}
+          >
+            📦 Almacen Central
+          </button>
+        </div>
+
         {/* Quick Search */}
         <button className="hidden md:flex items-center gap-2 h-7 px-3 bg-[#1e1e27] border border-[#2a2a38] rounded-lg text-xs text-[#5c5e78] hover:text-[#9496b0] hover:border-[#33334a] transition-all">
           <Search size={12} />

@@ -44,6 +44,15 @@ module.exports = function registerDashboardHandlers() {
       [monthStart]
     )?.value ?? 0
 
+    const dueTodayDebtors = queryAll(
+      `SELECT c.name, si.due_date, (si.amount - si.paid_amount) as saldo
+       FROM sale_installments si
+       JOIN customers c ON c.id = si.customer_id
+       WHERE date(si.due_date) = date('now')
+         AND si.status IN ('pending', 'partial', 'overdue')
+       ORDER BY c.name ASC`
+    )
+
     // Sales chart — last 7 days
     const salesChart = []
     const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -58,7 +67,18 @@ module.exports = function registerDashboardHandlers() {
       salesChart.push({ day: days[d.getDay()], value: row?.value ?? 0, date: ds })
     }
 
-    return { salesToday, salesMonth, profit, totalProducts, outOfStock, lowStock, totalCustomers, recentPurchases, salesChart }
+    return {
+      salesToday,
+      salesMonth,
+      profit,
+      totalProducts,
+      outOfStock,
+      lowStock,
+      totalCustomers,
+      recentPurchases,
+      salesChart,
+      dueTodayDebtors,
+    }
   })
 
   ipcMain.handle('db:dashboard:recentActivity', () => {

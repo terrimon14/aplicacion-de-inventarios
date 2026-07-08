@@ -245,6 +245,31 @@ export default function Dashboard() {
           </Card>
         </div>
       )}
+
+      {stats?.dueTodayDebtors?.length > 0 && (
+        <div className="grid grid-cols-1 gap-3">
+          {stats.dueTodayDebtors.map((alert, idx) => (
+            <Card
+              key={`${alert.name}-${idx}`}
+              className={idx % 2 === 0 ? 'border-rose-500/30 bg-rose-500/10' : 'border-amber-500/30 bg-amber-500/10'}
+            >
+              <div className="flex items-start gap-3">
+                <div className={clsx(
+                  'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+                  idx % 2 === 0 ? 'bg-rose-500/20' : 'bg-amber-500/20',
+                )}>
+                  <AlertTriangle size={16} className={idx % 2 === 0 ? 'text-rose-300' : 'text-amber-300'} />
+                </div>
+                <div>
+                  <p className={clsx('text-sm font-semibold', idx % 2 === 0 ? 'text-rose-200' : 'text-amber-200')}>
+                    ¡Atencion! El deudor {alert.name} tiene un pago pendiente programado para el dia de hoy
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

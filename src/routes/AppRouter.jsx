@@ -10,14 +10,15 @@ import LowStock from '../pages/inventory/LowStock'
 import NewSale from '../pages/sales/NewSale'
 import SalesHistory from '../pages/sales/SalesHistory'
 import Quotes from '../pages/sales/Quotes'
-import Invoices from '../pages/sales/Invoices'
 import CashRegister from '../pages/cash/CashRegister'
 import Customers from '../pages/customers/Customers'
+import Debtors from '../pages/customers/Debtors'
 import Suppliers from '../pages/suppliers/Suppliers'
 import Reports from '../pages/reports/Reports'
 import Users from '../pages/users/Users'
 import Settings from '../pages/settings/Settings'
 import Help from '../pages/help/Help'
+import PurchaseOrders from '../pages/purchases/PurchaseOrders'
 
 // Placeholder for pages not yet built
 function Placeholder({ title }) {
@@ -55,13 +56,12 @@ export default function AppRouter() {
         <Route path="/sales/new" element={<NewSale />} />
         <Route path="/sales/history" element={<SalesHistory />} />
         <Route path="/sales/quotes" element={<Quotes />} />
-        <Route path="/sales/invoices" element={<Invoices />} />
 
         {/* Purchases */}
         <Route path="/purchases" element={<Navigate to="/purchases/new" replace />} />
         <Route path="/purchases/new" element={<Placeholder title="Nueva Compra" />} />
         <Route path="/purchases/history" element={<Placeholder title="Historial de Compras" />} />
-        <Route path="/purchases/orders" element={<Placeholder title="Órdenes de Compra" />} />
+        <Route path="/purchases/orders" element={<PurchaseOrders />} />
 
         {/* Cash */}
         <Route path="/cash" element={<CashRegister />} />
@@ -71,7 +71,7 @@ export default function AppRouter() {
         {/* Customers */}
         <Route path="/customers" element={<Customers />} />
         <Route path="/customers/new" element={<Placeholder title="Nuevo Cliente" />} />
-        <Route path="/customers/groups" element={<Placeholder title="Grupos de Clientes" />} />
+        <Route path="/customers/debtors" element={<Debtors />} />
 
         {/* Suppliers */}
         <Route path="/suppliers" element={<Suppliers />} />

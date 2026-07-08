@@ -5,6 +5,7 @@ import Table, { THead, Th, TBody, Tr, Td } from '../../components/ui/Table'
 import Breadcrumb from '../../components/ui/Breadcrumb'
 import Alert from '../../components/ui/Alert'
 import Button from '../../components/ui/Button'
+import { useNavigate } from 'react-router-dom'
 import { mockProducts } from '../../data/mockData'
 import { formatCurrency } from '../../utils/formatters'
 import { clsx } from 'clsx'
@@ -12,6 +13,8 @@ import { clsx } from 'clsx'
 const lowStockProducts = mockProducts.filter(p => p.status === 'low' || p.status === 'out')
 
 export default function LowStock() {
+  const navigate = useNavigate()
+
   return (
     <div className="flex flex-col gap-5 animate-fade-in">
       <div>
@@ -66,7 +69,7 @@ export default function LowStock() {
             <CardTitle>Productos con Stock Bajo o Agotado</CardTitle>
             <CardSubtitle>Ordenados por urgencia</CardSubtitle>
           </div>
-          <Button size="sm" icon={Package}>Generar Orden de Compra</Button>
+          <Button size="sm" icon={Package} onClick={() => navigate('/purchases/orders')}>Generar Orden de Compra</Button>
         </CardHeader>
         <Table>
           <THead>

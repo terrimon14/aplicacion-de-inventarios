@@ -1,24 +1,48 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Plus, ShoppingCart, User, Trash2, CreditCard, Banknote } from 'lucide-react'
 import Card, { CardHeader, CardTitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input, { Select } from '../../components/ui/Input'
 import SearchInput from '../../components/ui/Search'
-import Badge from '../../components/ui/Badge'
 import Breadcrumb from '../../components/ui/Breadcrumb'
-import { mockProducts } from '../../data/mockData'
+import { useAsync } from '../../hooks/useAsync'
+import { productService } from '../../services/products'
+import { customerService } from '../../services/customers'
+import { saleService } from '../../services/sales'
+import { useUbicacion } from '../../contexts/UbicacionContext'
 import { formatCurrency } from '../../utils/formatters'
 import { clsx } from 'clsx'
 
-const initialCart = [
-  { ...mockProducts[0], qty: 1 },
-  { ...mockProducts[3], qty: 2 },
-]
-
 export default function NewSale() {
-  const [cart, setCart] = useState(initialCart)
+  const { ubicacionActiva, ubicacionId } = useUbicacion()
+  const [cart, setCart] = useState([])
   const [search, setSearch] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cash')
+  const [selectedCustomerId, setSelectedCustomerId] = useState('')
+  const [receivedAmount, setReceivedAmount] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState('')
+  const [schedule, setSchedule] = useState([
+    { amount: '', due_date: '' },
+  ])
+
+  const { data: products = [] } = useAsync(
+    async () => {
+      const result = await productService.list({ ubicacionId })
+      return Array.isArray(result) ? result : []
+    },
+    [ubicacionId],
+    [],
+  )
+
+  const { data: customers = [] } = useAsync(
+    async () => {
+      const result = await customerService.list()
+      return Array.isArray(result) ? result : []
+    },
+    [],
+    [],
+  )
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0)
   const tax = subtotal * 0.18
@@ -27,19 +51,71 @@ export default function NewSale() {
   const removeItem = (id) => setCart(prev => prev.filter(i => i.id !== id))
   const updateQty = (id, qty) => setCart(prev => prev.map(i => i.id === id ? { ...i, qty: Math.max(1, qty) } : i))
 
-  const filteredProducts = mockProducts.filter(p =>
-    p.stock > 0 && (
+  const filteredProducts = products.filter(p =>
+    Number(p.stock_vista) > 0 && (
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase())
+      String(p.sku || '').toLowerCase().includes(search.toLowerCase())
     )
   )
+
+  const selectedCustomer = useMemo(
+    () => customers.find((c) => String(c.id) === String(selectedCustomerId)),
+    [customers, selectedCustomerId],
+  )
+
+  const saveSale = async () => {
+    if (cart.length === 0) return
+
+    setSaving(true)
+    setMessage('')
+    try {
+      const installments = paymentMethod === 'credit'
+        ? schedule
+            .filter((row) => row.amount && row.due_date)
+            .map((row) => ({ amount: Number(row.amount), due_date: row.due_date }))
+        : []
+
+      await saleService.create({
+        customer_id: selectedCustomer ? selectedCustomer.id : null,
+        customer_name: selectedCustomer ? selectedCustomer.name : 'Cliente general',
+        payment_method: paymentMethod,
+        ubicacion_id: ubicacionId,
+        items: cart.map((item) => ({
+          product_id: item.id,
+          name: item.name,
+          quantity: item.qty,
+          price: item.price,
+        })),
+        installments,
+      })
+
+      setCart([])
+      setSchedule([{ amount: '', due_date: '' }])
+      setMessage('Venta registrada correctamente.')
+    } catch (error) {
+      setMessage(error.message || 'No se pudo registrar la venta.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const setScheduleField = (index, field, value) => {
+    setSchedule((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)))
+  }
 
   return (
     <div className="flex flex-col gap-5 animate-fade-in h-full">
       <div>
         <Breadcrumb items={['Ventas', 'Nueva Venta']} />
         <h1 className="text-xl font-bold text-[#e2e4f0] mt-2">Nueva Venta</h1>
+        <p className="text-sm text-[#5c5e78]">Descuento de stock desde {ubicacionActiva.emoji} {ubicacionActiva.label}</p>
       </div>
+
+      {message && (
+        <Card className="border-indigo-500/20 bg-indigo-500/5">
+          <p className="text-sm text-indigo-200">{message}</p>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 flex-1">
         {/* Left — Product Search */}
@@ -71,11 +147,11 @@ export default function NewSale() {
                     </div>
                     <div>
                       <p className="text-xs font-medium text-[#e2e4f0]">{p.name}</p>
-                      <p className="text-xs text-[#5c5e78] font-mono">{p.sku}</p>
+                      <p className="text-xs text-[#5c5e78] font-mono">{p.sku || '-'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-[#9496b0]">Stock: {p.stock}</span>
+                    <span className="text-xs text-[#9496b0]">Stock: {p.stock_vista}</span>
                     <span className="text-sm font-bold text-[#e2e4f0]">{formatCurrency(p.price)}</span>
                     <div className="w-6 h-6 rounded-md bg-indigo-500/15 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Plus size={12} className="text-indigo-400" />
@@ -140,11 +216,16 @@ export default function NewSale() {
                 <User size={15} className="text-indigo-400" />
               </div>
               <div className="flex-1">
-                <p className="text-xs font-medium text-[#e2e4f0]">Cliente general</p>
-                <p className="text-xs text-[#5c5e78]">Sin DNI/RUC</p>
+                <p className="text-xs font-medium text-[#e2e4f0]">{selectedCustomer?.name || 'Cliente general'}</p>
+                <p className="text-xs text-[#5c5e78]">{selectedCustomer?.document_number || 'Sin DNI/RUC'}</p>
               </div>
             </div>
-            <Button variant="secondary" size="sm" className="w-full">Seleccionar cliente</Button>
+            <Select value={selectedCustomerId} onChange={(e) => setSelectedCustomerId(e.target.value)}>
+              <option value="">Cliente general</option>
+              {customers.map((customer) => (
+                <option key={customer.id} value={customer.id}>{customer.name}</option>
+              ))}
+            </Select>
           </Card>
 
           <Card>
@@ -176,6 +257,7 @@ export default function NewSale() {
                 {[
                   { id: 'cash', label: 'Efectivo', Icon: Banknote },
                   { id: 'card', label: 'Tarjeta', Icon: CreditCard },
+                  { id: 'credit', label: 'Credito', Icon: CreditCard },
                 ].map(({ id, label, Icon }) => (
                   <button
                     key={id}
@@ -195,10 +277,47 @@ export default function NewSale() {
             </div>
 
             {paymentMethod === 'cash' && (
-              <Input label="Monto recibido" placeholder="0.00" type="number" className="mb-3" />
+              <Input
+                label="Monto recibido"
+                placeholder="0.00"
+                type="number"
+                value={receivedAmount}
+                onChange={(e) => setReceivedAmount(e.target.value)}
+                className="mb-3"
+              />
             )}
 
-            <Button className="w-full" size="lg" icon={ShoppingCart}>
+            {paymentMethod === 'credit' && (
+              <div className="mb-3 rounded-xl border border-[#2a2a38] p-3 space-y-2">
+                <p className="text-xs font-semibold text-[#9496b0]">Cronograma de cuotas</p>
+                {schedule.map((row, idx) => (
+                  <div key={idx} className="grid grid-cols-2 gap-2">
+                    <Input
+                      type="number"
+                      label="Monto"
+                      placeholder="0.00"
+                      value={row.amount}
+                      onChange={(e) => setScheduleField(idx, 'amount', e.target.value)}
+                    />
+                    <Input
+                      type="date"
+                      label="Vencimiento"
+                      value={row.due_date}
+                      onChange={(e) => setScheduleField(idx, 'due_date', e.target.value)}
+                    />
+                  </div>
+                ))}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setSchedule((prev) => [...prev, { amount: '', due_date: '' }])}
+                >
+                  Agregar cuota
+                </Button>
+              </div>
+            )}
+
+            <Button className="w-full" size="lg" icon={ShoppingCart} loading={saving} onClick={saveSale}>
               Procesar Venta
             </Button>
           </Card>

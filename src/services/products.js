@@ -7,6 +7,7 @@ export const productService = {
   update: (data) => invoke('db:products:update', data),
   delete: (id) => invoke('db:products:delete', id),
   updateStock: (id, delta) => invoke('db:products:updateStock', { id, delta }),
+  lowStock: (filters = {}) => invoke('db:products:lowStock', filters),
 }
 
 export const categoryService = {

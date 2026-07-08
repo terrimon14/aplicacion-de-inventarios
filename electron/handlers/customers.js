@@ -42,4 +42,23 @@ module.exports = function registerCustomerHandlers() {
     run(`UPDATE customers SET status = 'inactive' WHERE id = ?`, [id])
     return { id }
   })
+
+  ipcMain.handle('db:customers:debtors', () => {
+    return queryAll(`
+      SELECT
+        c.id as customer_id,
+        c.name,
+        c.phone,
+        c.email,
+        COUNT(si.id) as cuotas_pendientes,
+        COALESCE(SUM(si.amount - si.paid_amount), 0) as saldo_pendiente,
+        MIN(si.due_date) as proximo_vencimiento
+      FROM sale_installments si
+      JOIN customers c ON c.id = si.customer_id
+      WHERE si.status IN ('pending', 'partial', 'overdue')
+      GROUP BY c.id
+      HAVING saldo_pendiente > 0
+      ORDER BY proximo_vencimiento ASC
+    `)
+  })
 }

@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { clsx } from 'clsx'
 import { useApp } from '../../contexts/AppContext'
 import { mainNavItems, bottomNavItems } from '../../data/menuConfig'
@@ -6,7 +6,6 @@ import { mainNavItems, bottomNavItems } from '../../data/menuConfig'
 export default function Sidebar() {
   const { activeModule, setActiveModule } = useApp()
   const navigate = useNavigate()
-  const location = useLocation()
 
   const handleNav = (item) => {
     setActiveModule(item.id)

@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { clsx } from 'clsx'
+import { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
+import PrintInventoryModal from '../inventory/PrintInventoryModal'
 import { secondaryMenus, mainNavItems, bottomNavItems } from '../../data/menuConfig'
 
 const allNavItems = [...mainNavItems, ...bottomNavItems]
@@ -9,6 +11,7 @@ export default function SecondarySidebar() {
   const { activeModule } = useApp()
   const navigate = useNavigate()
   const location = useLocation()
+  const [showPrintModal, setShowPrintModal] = useState(false)
 
   const menuItems = secondaryMenus[activeModule] ?? []
   const navItem = allNavItems.find(item => item.id === activeModule)
@@ -39,7 +42,13 @@ export default function SecondarySidebar() {
           return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                if (item.path === '/inventory/print') {
+                  setShowPrintModal(true)
+                  return
+                }
+                navigate(item.path)
+              }}
               className={clsx(
                 'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-150 text-left',
                 isActive
@@ -57,6 +66,11 @@ export default function SecondarySidebar() {
           )
         })}
       </nav>
+
+      <PrintInventoryModal
+        isOpen={showPrintModal}
+        onClose={() => setShowPrintModal(false)}
+      />
     </aside>
   )
 }

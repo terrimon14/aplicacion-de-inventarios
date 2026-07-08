@@ -10,7 +10,7 @@ const VALID_CHANNELS = [
 
   // Products
   'db:products:list', 'db:products:get', 'db:products:create',
-  'db:products:update', 'db:products:delete', 'db:products:updateStock',
+  'db:products:update', 'db:products:delete', 'db:products:updateStock', 'db:products:lowStock',
 
   // Categories
   'db:categories:list', 'db:categories:create',
@@ -28,7 +28,7 @@ const VALID_CHANNELS = [
 
   // Customers
   'db:customers:list', 'db:customers:get', 'db:customers:create',
-  'db:customers:update', 'db:customers:delete',
+  'db:customers:update', 'db:customers:delete', 'db:customers:debtors',
 
   // Suppliers
   'db:suppliers:list', 'db:suppliers:get', 'db:suppliers:create',
@@ -43,6 +43,9 @@ const VALID_CHANNELS = [
 
   // Reports
   'db:reports:sales', 'db:reports:topProducts', 'db:reports:inventory',
+
+  // Purchase orders
+  'db:purchaseOrders:list', 'db:purchaseOrders:suggest', 'db:purchaseOrders:create',
 ]
 
 contextBridge.exposeInMainWorld('electron', {

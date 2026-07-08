@@ -35,6 +35,23 @@ module.exports = [
     updated_at TEXT DEFAULT (datetime('now'))
   )`,
 
+  // Fixed locations
+  `CREATE TABLE IF NOT EXISTS ubicaciones (
+    id INTEGER PRIMARY KEY,
+    nombre TEXT NOT NULL UNIQUE,
+    tipo TEXT NOT NULL DEFAULT 'fixed'
+  )`,
+
+  // Stock split by location
+  `CREATE TABLE IF NOT EXISTS inventario_ubicacion (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    producto_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    ubicacion_id INTEGER NOT NULL REFERENCES ubicaciones(id),
+    cantidad INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(producto_id, ubicacion_id)
+  )`,
+
   // Customers
   `CREATE TABLE IF NOT EXISTS customers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,10 +121,23 @@ module.exports = [
     tax REAL NOT NULL DEFAULT 0,
     discount REAL NOT NULL DEFAULT 0,
     total REAL NOT NULL DEFAULT 0,
-    payment_method TEXT DEFAULT 'cash' CHECK(payment_method IN ('cash','card','transfer','other')),
+    payment_method TEXT DEFAULT 'cash' CHECK(payment_method IN ('cash','card','transfer','credit','other')),
     status TEXT DEFAULT 'completed' CHECK(status IN ('completed','pending','cancelled')),
     cash_session_id INTEGER REFERENCES cash_sessions(id),
     notes TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )`,
+
+  // Installment schedule for credit sales
+  `CREATE TABLE IF NOT EXISTS sale_installments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sale_id INTEGER NOT NULL REFERENCES sales(id) ON DELETE CASCADE,
+    customer_id INTEGER REFERENCES customers(id),
+    amount REAL NOT NULL,
+    due_date TEXT NOT NULL,
+    paid_amount REAL NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','partial','paid','overdue')),
+    paid_at TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   )`,
 
@@ -146,4 +176,37 @@ module.exports = [
     cost REAL NOT NULL,
     subtotal REAL NOT NULL
   )`,
+
+  // Purchase orders for restocking workflow
+  `CREATE TABLE IF NOT EXISTS purchase_orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reference TEXT UNIQUE,
+    status TEXT NOT NULL DEFAULT 'pending_receipt' CHECK(status IN ('pending_receipt','received','cancelled')),
+    ubicacion_id INTEGER REFERENCES ubicaciones(id),
+    notes TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )`,
+
+  `CREATE TABLE IF NOT EXISTS purchase_order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    product_name TEXT NOT NULL,
+    brand_name TEXT DEFAULT '',
+    supplier_suggested TEXT DEFAULT '',
+    stock_actual INTEGER NOT NULL DEFAULT 0,
+    qty_requested INTEGER NOT NULL DEFAULT 1
+  )`,
+
+  // Seed fixed locations if they do not exist
+  `INSERT OR IGNORE INTO ubicaciones (id, nombre, tipo) VALUES (1, 'Almacen Central', 'fixed')`,
+  `INSERT OR IGNORE INTO ubicaciones (id, nombre, tipo) VALUES (2, 'Tienda', 'fixed')`,
+
+  // Backfill inventory split per product for old databases
+  `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)
+   SELECT p.id, 1, CAST(p.stock * 0.7 AS INTEGER)
+   FROM products p`,
+  `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)
+   SELECT p.id, 2, (p.stock - CAST(p.stock * 0.7 AS INTEGER))
+   FROM products p`,
 ]

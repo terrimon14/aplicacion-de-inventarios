@@ -2,6 +2,7 @@ import { invoke } from './api'
 
 export const customerService = {
   list: (filters = {}) => invoke('db:customers:list', filters),
+  debtors: () => invoke('db:customers:debtors'),
   get: (id) => invoke('db:customers:get', id),
   create: (data) => invoke('db:customers:create', data),
   update: (data) => invoke('db:customers:update', data),

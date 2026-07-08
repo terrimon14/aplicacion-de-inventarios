@@ -1,6 +1,10 @@
 // Initial seed data for a fresh database
 
 module.exports = [
+  // Fixed locations
+  `INSERT OR IGNORE INTO ubicaciones (id, nombre, tipo) VALUES (1, 'Almacen Central', 'fixed')`,
+  `INSERT OR IGNORE INTO ubicaciones (id, nombre, tipo) VALUES (2, 'Tienda', 'fixed')`,
+
   // Categories
   `INSERT INTO categories (name, description) VALUES ('Laptops', 'Computadoras portátiles')`,
   `INSERT INTO categories (name, description) VALUES ('Monitores', 'Pantallas y monitores')`,
@@ -37,6 +41,12 @@ module.exports = [
     ('Impresora Epson L3250', 'IMP-EP-001', '7501001001007', 6, 7, 1200.00, 850.00, 0, 3)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
     ('Router TP-Link AX3000', 'ROU-TP-001', '7501001001008', 7, 8, 580.00, 380.00, 11, 5)`,
+
+  // Inventory by location (1: Almacen Central, 2: Tienda)
+  `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)
+   SELECT id, 1, CAST(stock * 0.7 AS INTEGER) FROM products`,
+  `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)
+   SELECT id, 2, (stock - CAST(stock * 0.7 AS INTEGER)) FROM products`,
 
   // Default admin user (password: admin123 — hash is placeholder)
   `INSERT INTO users (name, email, role, password_hash, status) VALUES
