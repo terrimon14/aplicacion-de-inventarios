@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Plus, Download, Upload, Filter, Edit2, Trash2, Eye, RefreshCw } from 'lucide-react'
+import { Plus, Download, Upload, Edit2, Trash2, RefreshCw } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
+import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import SearchInput from '../../components/ui/Search'
@@ -52,7 +52,7 @@ export default function Products() {
   const openEdit = (p) => {
     setEditProduct(p)
     reset({
-      name: p.name, sku: p.sku, barcode: p.barcode,
+      name: p.name, sku: p.sku,
       category_id: p.category_id, price: p.price,
       cost: p.cost, stock: p.stock, min_stock: p.min_stock,
       description: p.description,
@@ -105,7 +105,7 @@ export default function Products() {
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <div className="flex-1 min-w-48">
             <SearchInput
-              placeholder="Buscar por nombre, SKU o código de barras..."
+              placeholder="Buscar por nombre o codigo..."
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1) }}
             />
@@ -137,7 +137,7 @@ export default function Products() {
             <Table>
               <THead>
                 <Th>Producto</Th>
-                <Th>SKU</Th>
+                <Th>Codigo</Th>
                 <Th>Categoría</Th>
                 <Th align="right">Precio</Th>
                 <Th align="right">Costo</Th>
@@ -236,14 +236,9 @@ export default function Products() {
             {...register('name', { required: 'El nombre es requerido' })}
           />
           <Input
-            label="SKU"
-            placeholder="Ej: LAP-HP-001"
+            label="Codigo"
+            placeholder="Ej: TV-SAM-043"
             {...register('sku')}
-          />
-          <Input
-            label="Código de barras"
-            placeholder="Ej: 7501234567890"
-            {...register('barcode')}
           />
           <Select
             label="Categoría"

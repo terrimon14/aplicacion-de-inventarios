@@ -1,5 +1,5 @@
-import { HelpCircle, BookOpen, Keyboard, Info, ExternalLink } from 'lucide-react'
-import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
+import { BookOpen, Keyboard, Info } from 'lucide-react'
+import Card, { CardHeader, CardTitle } from '../../components/ui/Card'
 import Breadcrumb from '../../components/ui/Breadcrumb'
 
 const shortcuts = [

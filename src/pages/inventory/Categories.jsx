@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Edit2, Trash2, Tag } from 'lucide-react'
-import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
+import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
@@ -65,7 +65,7 @@ export default function Categories() {
         }
       >
         <div className="flex flex-col gap-4">
-          <Input label="Nombre de la categoría" placeholder="Ej: Laptops" />
+          <Input label="Nombre de la categoría" placeholder="Ej: TV 4K UHD" />
           <Input label="Descripción (opcional)" placeholder="Descripción breve..." />
         </div>
       </Modal>

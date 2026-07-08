@@ -190,7 +190,7 @@ module.exports = function registerCustomerHandlers() {
         summary,
       }
     } catch (error) {
-      throw new Error(`No se pudo registrar el pago: ${error.message}`)
+      throw new Error(`No se pudo registrar el pago: ${error.message}`, { cause: error })
     }
   })
 }

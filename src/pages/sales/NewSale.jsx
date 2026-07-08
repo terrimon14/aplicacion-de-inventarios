@@ -153,7 +153,7 @@ export default function NewSale() {
               <CardTitle>Agregar Productos</CardTitle>
             </CardHeader>
             <SearchInput
-              placeholder="Buscar producto por nombre o SKU..."
+              placeholder="Buscar producto por nombre o codigo..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="mb-3"

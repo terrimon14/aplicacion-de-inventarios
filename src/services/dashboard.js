@@ -12,6 +12,7 @@ export const reportService = {
   summary: (filters = {}) => invoke('db:reports:summary', filters),
   topProducts: (filters = {}) => invoke('db:reports:topProducts', filters),
   inventory: (filters = {}) => invoke('db:reports:inventory', filters),
+  exportPdf: (payload) => invoke('app:reports:exportPdf', payload),
 }
 
 export const cashService = {

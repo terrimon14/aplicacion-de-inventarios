@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron')
-const { queryAll, queryOne, run, lastInsertRowId } = require('../database/index')
+const { queryAll, queryOne, withTransaction } = require('../database/index')
 
 function generateRef(prefix = 'COM') {
   const rows = queryAll(`SELECT COUNT(*) as cnt FROM purchases`)
@@ -33,17 +33,43 @@ module.exports = function registerPurchaseHandlers() {
     const total = subtotal + tax
     const reference = generateRef('COM')
 
-    run(`INSERT INTO purchases (reference, supplier_id, supplier_name, subtotal, tax, total, notes) VALUES (?,?,?,?,?,?,?)`,
-      [reference, supplier_id || null, supplier_name || '', subtotal, tax, total, notes])
-    const purchaseId = lastInsertRowId()
+    const purchaseId = withTransaction((tx) => {
+      tx.run(
+        `INSERT INTO purchases (reference, supplier_id, supplier_name, subtotal, tax, total, notes) VALUES (?,?,?,?,?,?,?)`,
+        [reference, supplier_id || null, supplier_name || '', subtotal, tax, total, notes],
+      )
+      const createdId = tx.lastInsertRowId()
 
-    items.forEach(item => {
-      run(`INSERT INTO purchase_items (purchase_id, product_id, product_name, quantity, cost, subtotal) VALUES (?,?,?,?,?,?)`,
-        [purchaseId, item.product_id || null, item.name, item.quantity, item.cost, item.cost * item.quantity])
-      if (item.product_id) {
-        run(`UPDATE products SET stock = stock + ?, updated_at = datetime('now') WHERE id = ?`,
-          [item.quantity, item.product_id])
-      }
+      items.forEach(item => {
+        tx.run(
+          `INSERT INTO purchase_items (purchase_id, product_id, product_name, quantity, cost, subtotal) VALUES (?,?,?,?,?,?)`,
+          [createdId, item.product_id || null, item.name, item.quantity, item.cost, item.cost * item.quantity],
+        )
+
+        if (item.product_id) {
+          tx.run(
+            `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad) VALUES (?, 1, 0)`,
+            [item.product_id],
+          )
+          tx.run(
+            `UPDATE inventario_ubicacion
+             SET cantidad = cantidad + ?, updated_at = datetime('now')
+             WHERE producto_id = ? AND ubicacion_id = 1`,
+            [item.quantity, item.product_id],
+          )
+
+          const row = tx.queryOne(
+            `SELECT COALESCE(SUM(cantidad), 0) as stock_total FROM inventario_ubicacion WHERE producto_id = ?`,
+            [item.product_id],
+          )
+          tx.run(
+            `UPDATE products SET stock = ?, updated_at = datetime('now') WHERE id = ?`,
+            [Number(row?.stock_total ?? 0), item.product_id],
+          )
+        }
+      })
+
+      return createdId
     })
 
     return { id: purchaseId, reference, total }

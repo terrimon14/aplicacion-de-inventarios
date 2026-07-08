@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useAsync, useMutation } from './useAsync'
-import { productService, categoryService, brandService } from '../services/products'
+import { productService, categoryService } from '../services/products'
 import { mockProducts, mockCategories } from '../data/mockData'
-import { isElectron } from '../services/api'
 
 export function useProducts(filters = {}) {
   const [search, setSearch] = useState(filters.search ?? '')

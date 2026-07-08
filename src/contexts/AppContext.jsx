@@ -11,7 +11,7 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'Stock bajo detectado', message: '47 productos con stock bajo', type: 'warning', read: false },
     { id: 2, title: 'Venta completada', message: 'Venta #0892 procesada exitosamente', type: 'success', read: false },
-    { id: 3, title: 'Producto agotado', message: 'Mouse Logitech MX sin stock', type: 'error', read: false },
+    { id: 3, title: 'Producto agotado', message: 'Sony Google TV 65" sin stock', type: 'error', read: false },
   ])
 
   const activeNavItem = allNavItems.find(item => item.id === activeModule)

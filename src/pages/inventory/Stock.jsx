@@ -87,7 +87,7 @@ export default function Stock() {
         <Table>
           <THead>
             <Th>Producto</Th>
-            <Th>SKU</Th>
+            <Th>Codigo</Th>
             <Th align="center">Stock</Th>
             <Th align="center">Almacen</Th>
             <Th align="center">Tienda</Th>

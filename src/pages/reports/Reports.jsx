@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { TrendingUp, ShoppingCart, Package, Download, Wallet } from 'lucide-react'
+import { TrendingUp, ShoppingCart, Package, Printer, Wallet } from 'lucide-react'
 import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input, { Select } from '../../components/ui/Input'
@@ -59,6 +59,8 @@ export default function Reports() {
   const [customFrom, setCustomFrom] = useState('')
   const [customTo, setCustomTo] = useState('')
   const [inventoryScope, setInventoryScope] = useState('all')
+  const [printing, setPrinting] = useState(false)
+  const [feedback, setFeedback] = useState('')
 
   const activeView = reportViews[location.pathname] || 'sales'
   const filters = useMemo(
@@ -136,6 +138,126 @@ export default function Reports() {
     { key: 'inventory', label: 'Inventario Valorado', path: '/reports/inventory' },
   ]
 
+  const reportMetaLabel = `Periodo: ${filters.from || 'inicio'} a ${filters.to || 'hoy'}`
+
+  const printCurrentReport = async () => {
+    const configByView = {
+      sales: {
+        title: 'Reporte de Ventas',
+        columns: [
+          { key: 'date', label: 'Fecha' },
+          { key: 'count', label: 'Notas', align: 'right', type: 'number' },
+          { key: 'units', label: 'Unidades', align: 'right', type: 'number' },
+          { key: 'total', label: 'Total Ventas', align: 'right', type: 'currency' },
+        ],
+        rows: salesData,
+        summaryCards: [
+          { label: 'Total Ventas', value: formatCurrency(summary?.totalSales || 0) },
+          { label: 'Total Gastos', value: formatCurrency(summary?.totalExpenses || 0) },
+          { label: 'Ganancia Neta', value: formatCurrency(summary?.netProfit || 0) },
+        ],
+      },
+      purchases: {
+        title: 'Reporte de Compras',
+        columns: [
+          { key: 'date', label: 'Fecha' },
+          { key: 'count', label: 'Compras', align: 'right', type: 'number' },
+          { key: 'units', label: 'Unidades', align: 'right', type: 'number' },
+          { key: 'total', label: 'Total Compras', align: 'right', type: 'currency' },
+        ],
+        rows: purchaseData,
+        summaryCards: [
+          { label: 'Total Compras', value: formatCurrency(summary?.totalPurchases || 0) },
+          { label: 'Total Gastos', value: formatCurrency(summary?.totalExpenses || 0) },
+          { label: 'Valor Inventario', value: formatCurrency(summary?.inventoryValue || 0) },
+        ],
+      },
+      profits: {
+        title: 'Reporte de Ganancias',
+        columns: [
+          { key: 'concept', label: 'Concepto' },
+          { key: 'value', label: 'Valor', align: 'right', type: 'currency' },
+        ],
+        rows: [
+          { concept: 'Ingreso bruto por items', value: profitData?.grossRevenue || 0 },
+          { concept: 'Costo historico vendido', value: profitData?.historicalCost || 0 },
+          { concept: 'Ganancia bruta', value: profitData?.grossProfit || 0 },
+          { concept: 'Gastos del periodo', value: profitData?.expenses || 0 },
+          { concept: 'Ganancia neta', value: profitData?.netProfit || 0 },
+        ],
+        summaryCards: [
+          { label: 'Ganancia Bruta', value: formatCurrency(profitData?.grossProfit || 0) },
+          { label: 'Gastos', value: formatCurrency(profitData?.expenses || 0) },
+          { label: 'Ganancia Neta', value: formatCurrency(profitData?.netProfit || 0) },
+        ],
+      },
+      'top-products': {
+        title: 'Reporte de Productos Mas Vendidos',
+        columns: [
+          { key: 'rank', label: '#' },
+          { key: 'name', label: 'Producto' },
+          { key: 'sku', label: 'Codigo' },
+          { key: 'sold', label: 'Unidades', align: 'right', type: 'number' },
+          { key: 'revenue', label: 'Ingresos', align: 'right', type: 'currency' },
+          { key: 'gross_profit', label: 'Ganancia Bruta', align: 'right', type: 'currency' },
+        ],
+        rows: topProducts.map((row, index) => ({ ...row, rank: index + 1 })),
+        summaryCards: [
+          { label: 'Productos listados', value: String(topProducts.length) },
+          { label: 'Top unidades', value: String(Number(topProducts[0]?.sold || 0)) },
+          { label: 'Mayor ingreso', value: formatCurrency(topProducts[0]?.revenue || 0) },
+        ],
+      },
+      inventory: {
+        title: 'Reporte de Inventario Valorado',
+        columns: [
+          { key: 'name', label: 'Producto' },
+          { key: 'sku', label: 'Codigo' },
+          { key: 'quantity', label: 'Cantidad', align: 'right', type: 'number' },
+          { key: 'cost', label: 'Costo Unitario', align: 'right', type: 'currency' },
+          { key: 'price', label: 'Precio Venta', align: 'right', type: 'currency' },
+          { key: 'total_cost', label: 'Costo Total', align: 'right', type: 'currency' },
+          { key: 'total_return', label: 'Retorno Estimado', align: 'right', type: 'currency' },
+          { key: 'projected_margin', label: 'Margen', align: 'right', type: 'currency' },
+        ],
+        rows: inventoryData?.rows || [],
+        summaryCards: [
+          { label: 'Costo Total', value: formatCurrency(inventoryData?.summary?.totalCost || 0) },
+          { label: 'Retorno Total', value: formatCurrency(inventoryData?.summary?.totalReturn || 0) },
+          { label: 'Margen Proyectado', value: formatCurrency(inventoryData?.summary?.projectedMargin || 0) },
+        ],
+      },
+    }
+
+    const config = configByView[activeView]
+    if (!config || !Array.isArray(config.rows) || config.rows.length === 0) {
+      setFeedback('No hay tabla disponible para imprimir con el filtro actual.')
+      return
+    }
+
+    setPrinting(true)
+    setFeedback('')
+    try {
+      const result = await reportService.exportPdf({
+        title: config.title,
+        optionLabel: reportMetaLabel,
+        summaryCards: config.summaryCards,
+        columns: config.columns,
+        rows: config.rows,
+      })
+
+      setFeedback(
+        result?.canceled
+          ? 'Impresion cancelada por el usuario.'
+          : `Reporte generado correctamente en: ${result?.filePath}`,
+      )
+    } catch (error) {
+      setFeedback(error.message || 'No se pudo imprimir el reporte.')
+    } finally {
+      setPrinting(false)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-5 animate-fade-in">
       <div className="flex items-start justify-between">
@@ -144,8 +266,14 @@ export default function Reports() {
           <h1 className="text-xl font-bold text-[#e2e4f0] mt-2">Reportes</h1>
           <p className="text-sm text-[#5c5e78]">Análisis de rendimiento del negocio</p>
         </div>
-        <Button variant="secondary" size="sm" icon={Download}>Exportar Reporte</Button>
+        <Button variant="secondary" size="sm" icon={Printer} loading={printing} onClick={printCurrentReport}>Imprimir Reporte</Button>
       </div>
+
+      {feedback && (
+        <Card className="border-indigo-500/20 bg-indigo-500/5">
+          <p className="text-sm text-indigo-200">{feedback}</p>
+        </Card>
+      )}
 
       <Card>
         <div className="flex flex-col xl:flex-row xl:items-center gap-3 xl:justify-between">
@@ -409,7 +537,7 @@ export default function Reports() {
             <Table>
               <THead>
                 <Th>Producto</Th>
-                <Th>SKU</Th>
+                <Th>Codigo</Th>
                 <Th align="center">Cantidad</Th>
                 <Th align="right">Costo Unitario</Th>
                 <Th align="right">Precio Venta</Th>

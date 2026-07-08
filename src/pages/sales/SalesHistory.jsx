@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Eye, NotebookPen } from 'lucide-react'
-import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
+import Card from '../../components/ui/Card'
 import Badge from '../../components/ui/Badge'
 import SearchInput from '../../components/ui/Search'
 import Table, { THead, Th, TBody, Tr, Td } from '../../components/ui/Table'

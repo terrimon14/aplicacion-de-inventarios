@@ -74,7 +74,7 @@ export default function LowStock() {
         <Table>
           <THead>
             <Th>Producto</Th>
-            <Th>SKU</Th>
+            <Th>Codigo</Th>
             <Th>Categoría</Th>
             <Th align="center">Stock Actual</Th>
             <Th align="center">Stock Mínimo</Th>

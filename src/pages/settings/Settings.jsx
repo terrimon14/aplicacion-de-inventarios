@@ -1,4 +1,4 @@
-import { Building2, Printer, Palette, Globe, Save } from 'lucide-react'
+import { Building2, Palette, Globe, Save } from 'lucide-react'
 import Card, { CardHeader, CardTitle, CardSubtitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input, { Select } from '../../components/ui/Input'

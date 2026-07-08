@@ -172,7 +172,7 @@ module.exports = function registerPurchaseOrderHandlers() {
 
       return queryOne(`SELECT * FROM purchase_orders WHERE id = ?`, [id])
     } catch (error) {
-      throw new Error(`No se pudo recibir la orden: ${error.message}`)
+      throw new Error(`No se pudo recibir la orden: ${error.message}`, { cause: error })
     }
   })
 }

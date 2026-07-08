@@ -123,7 +123,7 @@ export default function Transfers() {
             <SearchInput
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar producto por nombre o SKU..."
+              placeholder="Buscar producto por nombre o codigo..."
             />
 
             <div className="rounded-xl border border-[#2a2a38] overflow-hidden">
@@ -132,7 +132,7 @@ export default function Transfers() {
                   <thead>
                     <tr className="text-xs uppercase text-[#5c5e78] border-b border-[#2a2a38]">
                       <th className="px-3 py-2 text-left">Producto</th>
-                      <th className="px-3 py-2 text-left">SKU</th>
+                      <th className="px-3 py-2 text-left">Codigo</th>
                       <th className="px-3 py-2 text-center">Accion</th>
                     </tr>
                   </thead>

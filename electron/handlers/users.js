@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron')
-const { queryAll, queryOne, run, lastInsertRowId } = require('../database/index')
+const { queryAll, run, lastInsertRowId } = require('../database/index')
 
 module.exports = function registerUserHandlers() {
   ipcMain.handle('db:users:list', () =>

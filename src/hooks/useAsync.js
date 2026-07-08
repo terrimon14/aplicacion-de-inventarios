@@ -11,27 +11,32 @@ export function useAsync(fn, deps = [], initialData = null) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const mounted = useRef(true)
+  const fnRef = useRef(fn)
+
+  useEffect(() => {
+    fnRef.current = fn
+  }, [fn])
 
   const execute = useCallback(async () => {
-    if (!fn) return
+    if (!fnRef.current) return
     setLoading(true)
     setError(null)
     try {
-      const result = await fn()
+      const result = await fnRef.current()
       if (mounted.current) setData(result)
     } catch (err) {
       if (mounted.current) setError(err?.message ?? 'Error desconocido')
     } finally {
       if (mounted.current) setLoading(false)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
+  }, [])
 
   useEffect(() => {
     mounted.current = true
     execute()
     return () => { mounted.current = false }
-  }, [execute])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [execute, ...deps])
 
   const refetch = execute
 

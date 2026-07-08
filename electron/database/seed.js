@@ -6,41 +6,41 @@ module.exports = [
   `INSERT OR IGNORE INTO ubicaciones (id, nombre, tipo) VALUES (2, 'Tienda', 'fixed')`,
 
   // Categories
-  `INSERT INTO categories (name, description) VALUES ('Laptops', 'Computadoras portátiles')`,
-  `INSERT INTO categories (name, description) VALUES ('Monitores', 'Pantallas y monitores')`,
-  `INSERT INTO categories (name, description) VALUES ('Periféricos', 'Teclados, ratones y accesorios')`,
-  `INSERT INTO categories (name, description) VALUES ('Almacenamiento', 'Discos duros y SSDs')`,
-  `INSERT INTO categories (name, description) VALUES ('Memoria', 'RAM y memorias')`,
-  `INSERT INTO categories (name, description) VALUES ('Impresoras', 'Impresoras y escáneres')`,
-  `INSERT INTO categories (name, description) VALUES ('Redes', 'Routers, switches y cables')`,
+  `INSERT INTO categories (name, description) VALUES ('TV Smart LED', 'Televisores Smart LED de entrada y gama media')`,
+  `INSERT INTO categories (name, description) VALUES ('TV 4K UHD', 'Televisores 4K UHD para hogar y negocio')`,
+  `INSERT INTO categories (name, description) VALUES ('TV QLED / OLED', 'Modelos premium con mejor contraste y color')`,
+  `INSERT INTO categories (name, description) VALUES ('TV 32 a 43 pulgadas', 'Formato compacto para dormitorios y oficinas')`,
+  `INSERT INTO categories (name, description) VALUES ('TV 50 a 65 pulgadas', 'Formato familiar para sala principal')`,
+  `INSERT INTO categories (name, description) VALUES ('Soportes y Montaje TV', 'Bases de pared y accesorios de instalacion')`,
+  `INSERT INTO categories (name, description) VALUES ('Cables y Accesorios TV', 'HDMI, extensiones y control remoto')`,
 
   // Brands
-  `INSERT INTO brands (name) VALUES ('HP')`,
-  `INSERT INTO brands (name) VALUES ('LG')`,
-  `INSERT INTO brands (name) VALUES ('Logitech')`,
-  `INSERT INTO brands (name) VALUES ('Redragon')`,
   `INSERT INTO brands (name) VALUES ('Samsung')`,
-  `INSERT INTO brands (name) VALUES ('Corsair')`,
-  `INSERT INTO brands (name) VALUES ('Epson')`,
-  `INSERT INTO brands (name) VALUES ('TP-Link')`,
+  `INSERT INTO brands (name) VALUES ('LG')`,
+  `INSERT INTO brands (name) VALUES ('Sony')`,
+  `INSERT INTO brands (name) VALUES ('TCL')`,
+  `INSERT INTO brands (name) VALUES ('Hisense')`,
+  `INSERT INTO brands (name) VALUES ('AOC')`,
+  `INSERT INTO brands (name) VALUES ('Xiaomi')`,
+  `INSERT INTO brands (name) VALUES ('JBL')`,
 
   // Products
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('Laptop HP 14" Core i5', 'LAP-HP-001', '7501001001001', 1, 1, 4500.00, 3200.00, 8, 5)`,
+    ('Samsung Smart TV 43" Crystal', 'TV-SA-043', '7502001001001', 1, 1, 1899.00, 1420.00, 8, 5)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('Monitor LG 24" FHD', 'MON-LG-001', '7501001001002', 2, 2, 1800.00, 1200.00, 15, 5)`,
+    ('LG Smart TV 55" 4K UHD', 'TV-LG-055', '7502001001002', 2, 2, 2799.00, 2140.00, 15, 5)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('Mouse Logitech MX Master', 'MOU-LO-001', '7501001001003', 3, 3, 320.00, 200.00, 0, 5)`,
+    ('Sony Google TV 65" 4K', 'TV-SO-065', '7502001001003', 3, 3, 4599.00, 3650.00, 0, 5)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('Teclado Mecánico Redragon', 'TEC-RE-001', '7501001001004', 3, 4, 280.00, 180.00, 24, 5)`,
+    ('TCL Smart TV 32" HD', 'TV-TC-032', '7502001001004', 4, 4, 999.00, 720.00, 24, 5)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('SSD Samsung 1TB', 'SSD-SA-001', '7501001001005', 4, 5, 750.00, 500.00, 5, 5)`,
+    ('Hisense Smart TV 50" 4K', 'TV-HI-050', '7502001001005', 5, 5, 2399.00, 1810.00, 5, 5)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('RAM Corsair 16GB DDR4', 'RAM-CO-001', '7501001001006', 5, 6, 420.00, 280.00, 32, 5)`,
+    ('Soporte de Pared TV 32-65"', 'ACC-SP-065', '7502001001006', 6, 6, 159.00, 95.00, 32, 5)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('Impresora Epson L3250', 'IMP-EP-001', '7501001001007', 6, 7, 1200.00, 850.00, 0, 3)`,
+    ('Cable HDMI 2.1 2 metros', 'ACC-HDMI-2M', '7502001001007', 7, 7, 49.00, 22.00, 0, 10)`,
   `INSERT INTO products (name, sku, barcode, category_id, brand_id, price, cost, stock, min_stock) VALUES
-    ('Router TP-Link AX3000', 'ROU-TP-001', '7501001001008', 7, 8, 580.00, 380.00, 11, 5)`,
+    ('Barra de Sonido JBL 2.1', 'ACC-JBL-21', '7502001001008', 7, 8, 899.00, 620.00, 11, 4)`,
 
   // Inventory by location (1: Almacen Central, 2: Tienda)
   `INSERT OR IGNORE INTO inventario_ubicacion (producto_id, ubicacion_id, cantidad)

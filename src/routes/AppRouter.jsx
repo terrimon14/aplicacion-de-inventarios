@@ -5,9 +5,11 @@ import Layout from '../components/layout/Layout'
 import Dashboard from '../pages/Dashboard'
 import Products from '../pages/inventory/Products'
 import Categories from '../pages/inventory/Categories'
+import Brands from '../pages/inventory/Brands'
 import Stock from '../pages/inventory/Stock'
 import LowStock from '../pages/inventory/LowStock'
 import Transfers from '../pages/inventory/Transfers'
+import PrintInventory from '../pages/inventory/PrintInventory'
 import NewSale from '../pages/sales/NewSale'
 import SalesHistory from '../pages/sales/SalesHistory'
 import Quotes from '../pages/sales/Quotes'
@@ -23,6 +25,10 @@ import Settings from '../pages/settings/Settings'
 import Help from '../pages/help/Help'
 import PurchaseOrders from '../pages/purchases/PurchaseOrders'
 import PurchaseOrderDetail from '../pages/purchases/PurchaseOrderDetail'
+import NewPurchase from '../pages/purchases/NewPurchase'
+import PurchaseHistory from '../pages/purchases/PurchaseHistory'
+import NewCustomer from '../pages/customers/NewCustomer'
+import NewSupplier from '../pages/suppliers/NewSupplier'
 
 // Placeholder for pages not yet built
 function Placeholder({ title }) {
@@ -48,10 +54,11 @@ export default function AppRouter() {
         <Route path="/inventory" element={<Navigate to="/inventory/products" replace />} />
         <Route path="/inventory/products" element={<Products />} />
         <Route path="/inventory/categories" element={<Categories />} />
-        <Route path="/inventory/brands" element={<Placeholder title="Marcas" />} />
+        <Route path="/inventory/brands" element={<Brands />} />
         <Route path="/inventory/stock" element={<Stock />} />
         <Route path="/inventory/transfers" element={<Transfers />} />
         <Route path="/inventory/low-stock" element={<LowStock />} />
+        <Route path="/inventory/print" element={<PrintInventory />} />
         <Route path="/inventory/import" element={<Placeholder title="Importar productos" />} />
         <Route path="/inventory/export" element={<Placeholder title="Exportar productos" />} />
         <Route path="/inventory/barcodes" element={<Placeholder title="Códigos de barras" />} />
@@ -64,8 +71,8 @@ export default function AppRouter() {
 
         {/* Purchases */}
         <Route path="/purchases" element={<Navigate to="/purchases/new" replace />} />
-        <Route path="/purchases/new" element={<Placeholder title="Nueva Compra" />} />
-        <Route path="/purchases/history" element={<Placeholder title="Historial de Compras" />} />
+        <Route path="/purchases/new" element={<NewPurchase />} />
+        <Route path="/purchases/history" element={<PurchaseHistory />} />
         <Route path="/purchases/orders" element={<PurchaseOrders />} />
         <Route path="/purchases/orders/:id" element={<PurchaseOrderDetail />} />
 
@@ -76,12 +83,12 @@ export default function AppRouter() {
 
         {/* Customers */}
         <Route path="/customers" element={<Customers />} />
-        <Route path="/customers/new" element={<Placeholder title="Nuevo Cliente" />} />
+        <Route path="/customers/new" element={<NewCustomer />} />
         <Route path="/customers/debtors" element={<Debtors />} />
 
         {/* Suppliers */}
         <Route path="/suppliers" element={<Suppliers />} />
-        <Route path="/suppliers/new" element={<Placeholder title="Nuevo Proveedor" />} />
+        <Route path="/suppliers/new" element={<NewSupplier />} />
 
         {/* Reports */}
         <Route path="/reports" element={<Reports />} />

@@ -56,7 +56,7 @@ function runMigrations() {
   schema.forEach(sql => {
     try {
       db.run(sql)
-    } catch (err) {
+    } catch {
       // Table already exists — skip
     }
   })
@@ -71,7 +71,11 @@ function seedIfEmpty() {
 
   const seed = require('./seed')
   seed.forEach(sql => {
-    try { db.run(sql) } catch (_) {}
+    try {
+      db.run(sql)
+    } catch {
+      // Seed statements may fail if already present; safe to ignore.
+    }
   })
   saveDatabase()
 }
@@ -138,7 +142,7 @@ function withTransaction(callback) {
     try {
       db.run('ROLLBACK')
       saveDatabase()
-    } catch (_) {
+    } catch {
       // Ignore rollback failures.
     }
     throw error

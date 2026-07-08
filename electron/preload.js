@@ -56,7 +56,7 @@ const VALID_CHANNELS = [
   'db:transfers:list', 'db:transfers:create',
 
   // Printing
-  'app:inventory:exportPdf',
+  'app:inventory:exportPdf', 'app:reports:exportPdf',
 ]
 
 contextBridge.exposeInMainWorld('electron', {

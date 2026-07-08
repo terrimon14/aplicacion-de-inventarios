@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, Eye, Users } from 'lucide-react'
-import Card, { CardHeader, CardTitle } from '../../components/ui/Card'
+import { Plus, Edit2, Trash2, Eye } from 'lucide-react'
+import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import SearchInput from '../../components/ui/Search'

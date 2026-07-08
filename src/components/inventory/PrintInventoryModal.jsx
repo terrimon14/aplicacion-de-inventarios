@@ -39,10 +39,10 @@ export default function PrintInventoryModal({ isOpen, onClose }) {
   const selected = OPTIONS.find(o => o.id === option) ?? OPTIONS[0]
 
   const summary = useMemo(() => {
-    const totalSku = previewData.length
+    const totalCodigos = previewData.length
     const totalUnidades = previewData.reduce((acc, p) => acc + (Number(p.stock_vista ?? p.stock ?? 0)), 0)
     const totalValor = previewData.reduce((acc, p) => acc + (Number(p.stock_vista ?? p.stock ?? 0) * Number(p.price ?? 0)), 0)
-    return { totalSku, totalUnidades, totalValor }
+    return { totalCodigos, totalUnidades, totalValor }
   }, [previewData])
 
   const loadPreview = async () => {
@@ -151,7 +151,7 @@ export default function PrintInventoryModal({ isOpen, onClose }) {
           </div>
 
           <div className="px-4 py-3 text-xs text-[#9496b0] grid grid-cols-3 gap-3 border-b border-[#2a2a38]">
-            <p>SKU: <span className="text-[#e2e4f0] font-semibold">{summary.totalSku}</span></p>
+            <p>Codigos: <span className="text-[#e2e4f0] font-semibold">{summary.totalCodigos}</span></p>
             <p>Unidades: <span className="text-[#e2e4f0] font-semibold">{summary.totalUnidades}</span></p>
             <p>Valor: <span className="text-[#e2e4f0] font-semibold">{formatCurrency(summary.totalValor)}</span></p>
           </div>
@@ -166,7 +166,7 @@ export default function PrintInventoryModal({ isOpen, onClose }) {
                 <thead>
                   <tr className="text-left border-b border-[#2a2a38] text-[#5c5e78] text-xs uppercase">
                     <th className="px-4 py-2">Producto</th>
-                    <th className="px-4 py-2">SKU</th>
+                    <th className="px-4 py-2">Codigo</th>
                     <th className="px-4 py-2 text-right">Stock</th>
                     <th className="px-4 py-2 text-right">Precio</th>
                   </tr>

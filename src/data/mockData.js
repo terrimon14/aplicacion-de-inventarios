@@ -13,22 +13,22 @@ export const mockStats = {
 
 export const mockRecentActivity = [
   { id: 1, type: 'sale', description: 'Venta #0892 — Carlos Mendoza', amount: 1250.0, time: 'Hace 5 min', status: 'success' },
-  { id: 2, type: 'alert', description: 'Stock bajo: Laptop HP 14"', amount: null, time: 'Hace 12 min', status: 'warning' },
+  { id: 2, type: 'alert', description: 'Stock bajo: Samsung Smart TV 43"', amount: null, time: 'Hace 12 min', status: 'warning' },
   { id: 3, type: 'purchase', description: 'Compra #0231 — Proveedor TechCorp', amount: 8400.0, time: 'Hace 30 min', status: 'info' },
   { id: 4, type: 'sale', description: 'Venta #0891 — Ana García', amount: 450.0, time: 'Hace 45 min', status: 'success' },
-  { id: 5, type: 'alert', description: 'Producto agotado: Mouse Logitech MX', amount: null, time: 'Hace 1h', status: 'error' },
+  { id: 5, type: 'alert', description: 'Producto agotado: Sony Google TV 65"', amount: null, time: 'Hace 1h', status: 'error' },
   { id: 6, type: 'sale', description: 'Venta #0890 — Juan Pérez', amount: 2100.0, time: 'Hace 2h', status: 'success' },
 ]
 
 export const mockProducts = [
-  { id: 1, name: 'Laptop HP 14" Core i5', sku: 'LAP-HP-001', category: 'Laptops', brand: 'HP', price: 4500.0, stock: 8, status: 'low' },
-  { id: 2, name: 'Monitor LG 24" FHD', sku: 'MON-LG-001', category: 'Monitores', brand: 'LG', price: 1800.0, stock: 15, status: 'normal' },
-  { id: 3, name: 'Mouse Logitech MX Master', sku: 'MOU-LO-001', category: 'Periféricos', brand: 'Logitech', price: 320.0, stock: 0, status: 'out' },
-  { id: 4, name: 'Teclado Mecánico Redragon', sku: 'TEC-RE-001', category: 'Periféricos', brand: 'Redragon', price: 280.0, stock: 24, status: 'normal' },
-  { id: 5, name: 'SSD Samsung 1TB', sku: 'SSD-SA-001', category: 'Almacenamiento', brand: 'Samsung', price: 750.0, stock: 5, status: 'low' },
-  { id: 6, name: 'RAM Corsair 16GB DDR4', sku: 'RAM-CO-001', category: 'Memoria', brand: 'Corsair', price: 420.0, stock: 32, status: 'normal' },
-  { id: 7, name: 'Impresora Epson L3250', sku: 'IMP-EP-001', category: 'Impresoras', brand: 'Epson', price: 1200.0, stock: 0, status: 'out' },
-  { id: 8, name: 'Router TP-Link AX3000', sku: 'ROU-TP-001', category: 'Redes', brand: 'TP-Link', price: 580.0, stock: 11, status: 'normal' },
+  { id: 1, name: 'Samsung Smart TV 43" Crystal', sku: 'TV-SA-043', category: 'TV Smart LED', brand: 'Samsung', price: 1899.0, stock: 8, status: 'low' },
+  { id: 2, name: 'LG Smart TV 55" 4K UHD', sku: 'TV-LG-055', category: 'TV 4K UHD', brand: 'LG', price: 2799.0, stock: 15, status: 'normal' },
+  { id: 3, name: 'Sony Google TV 65" 4K', sku: 'TV-SO-065', category: 'TV QLED / OLED', brand: 'Sony', price: 4599.0, stock: 0, status: 'out' },
+  { id: 4, name: 'TCL Smart TV 32" HD', sku: 'TV-TC-032', category: 'TV 32 a 43 pulgadas', brand: 'TCL', price: 999.0, stock: 24, status: 'normal' },
+  { id: 5, name: 'Hisense Smart TV 50" 4K', sku: 'TV-HI-050', category: 'TV 50 a 65 pulgadas', brand: 'Hisense', price: 2399.0, stock: 5, status: 'low' },
+  { id: 6, name: 'Soporte de Pared TV 32-65"', sku: 'ACC-SP-065', category: 'Soportes y Montaje TV', brand: 'AOC', price: 159.0, stock: 32, status: 'normal' },
+  { id: 7, name: 'Cable HDMI 2.1 2 metros', sku: 'ACC-HDMI-2M', category: 'Cables y Accesorios TV', brand: 'Xiaomi', price: 49.0, stock: 0, status: 'out' },
+  { id: 8, name: 'Barra de Sonido JBL 2.1', sku: 'ACC-JBL-21', category: 'Cables y Accesorios TV', brand: 'JBL', price: 899.0, stock: 11, status: 'normal' },
 ]
 
 export const mockSales = [
@@ -58,11 +58,11 @@ export const mockSalesChart = [
 ]
 
 export const mockCategories = [
-  { id: 1, name: 'Laptops', products: 45, slug: 'laptops' },
-  { id: 2, name: 'Monitores', products: 28, slug: 'monitores' },
-  { id: 3, name: 'Periféricos', products: 112, slug: 'perifericos' },
-  { id: 4, name: 'Almacenamiento', products: 67, slug: 'almacenamiento' },
-  { id: 5, name: 'Memoria', products: 34, slug: 'memoria' },
-  { id: 6, name: 'Impresoras', products: 19, slug: 'impresoras' },
-  { id: 7, name: 'Redes', products: 42, slug: 'redes' },
+  { id: 1, name: 'TV Smart LED', products: 45, slug: 'tv-smart-led' },
+  { id: 2, name: 'TV 4K UHD', products: 28, slug: 'tv-4k-uhd' },
+  { id: 3, name: 'TV QLED / OLED', products: 16, slug: 'tv-qled-oled' },
+  { id: 4, name: 'TV 32 a 43 pulgadas', products: 38, slug: 'tv-32-43' },
+  { id: 5, name: 'TV 50 a 65 pulgadas', products: 27, slug: 'tv-50-65' },
+  { id: 6, name: 'Soportes y Montaje TV', products: 19, slug: 'soportes-tv' },
+  { id: 7, name: 'Cables y Accesorios TV', products: 42, slug: 'accesorios-tv' },
 ]

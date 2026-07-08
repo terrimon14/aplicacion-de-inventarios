@@ -1,4 +1,3 @@
-const { ipcMain } = require('electron')
 const { getDatabase } = require('../database/index')
 const registerProductHandlers = require('./products')
 const registerCategoryHandlers = require('./categories')
